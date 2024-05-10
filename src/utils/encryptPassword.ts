@@ -1,7 +1,7 @@
-import bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
-export async function encryptPassword(password: string): Promise<string> {
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  return hashedPassword;
+export function encryptPassword(password: string): string {
+    const sha256 = crypto.createHash('sha256');
+    sha256.update(password, 'utf8');
+    return sha256.digest('hex');
 }
