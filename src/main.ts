@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import * as dotenv from 'dotenv'
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -13,7 +14,16 @@ async function bootstrap() {
     origin: '*',
     credentials: true,
   })
-
+  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      skipMissingProperties: false,
+      whitelist: false,
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  
   const config = new DocumentBuilder()
     .setTitle(process.env.API_NAME)
     .setDescription('Backend - Haciendola')
