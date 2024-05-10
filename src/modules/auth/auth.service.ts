@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { encryptPassword } from 'src/utils/encryptPassword';
@@ -22,7 +22,11 @@ export class AuthService {
                 password: encryptPassword(loginDto.password)
             }
         }))
-        //todo error on null
+        
+        if(!user){
+            throw new BadRequestException('Credenciales incorrectas')
+        }
+
         const payload = {
             userId: user.id,
             username: user.username
