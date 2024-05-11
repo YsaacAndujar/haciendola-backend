@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateOrUpdateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { ILike, Not, Repository } from 'typeorm';
+import { ILike, Not, Repository, FindOptionsWhere } from 'typeorm';
 import { GetPaginatedProductsDto } from './dto/get-products.dto';
 
 @Injectable()
@@ -24,8 +24,8 @@ export class ProductsService {
   }
 
   private async validateProductCreateDto({ handle }: CreateOrUpdateProductDto, id: number = undefined) {
-    const where: any = {
-      handle
+    const where: FindOptionsWhere<Product> = {
+      handle,
     }
     if (id) {
       where.id = Not(id)
