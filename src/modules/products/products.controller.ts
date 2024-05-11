@@ -1,8 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { CreateOrUpdateProductDto } from './dto/create-product.dto';
-import { GetPaginatedProductsDto } from './dto/get-products.dto';
 import { ProductsService } from './products.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateOrUpdateProductDto, GetPaginatedProductsDto } from './dto';
 
 @Controller('products')
 @ApiTags('Products')

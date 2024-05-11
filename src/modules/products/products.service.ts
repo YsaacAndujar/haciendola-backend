@@ -1,9 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrUpdateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from './entities/product.entity';
 import { ILike, Not, Repository, FindOptionsWhere } from 'typeorm';
-import { GetPaginatedProductsDto } from './dto/get-products.dto';
+import { CreateOrUpdateProductDto, GetPaginatedProductsDto } from './dto';
+import { Product } from './entities';
 
 @Injectable()
 export class ProductsService {

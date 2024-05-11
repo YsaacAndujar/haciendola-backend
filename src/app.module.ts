@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ProductsModule } from './modules/products/products.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from './guards';
 
 @Module({
   imports: [ProductsModule, AuthModule,

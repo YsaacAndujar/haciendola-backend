@@ -1,13 +1,8 @@
 import { Body, Controller, Post, Put, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LoginDto } from './dto/login.dto';
-import { SigninDto } from './dto/signing.dto';
 import { Public } from 'src/decorators/public.decorator';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ChangePasswordByCodeDto } from './dto/change-password-by-code.dto';
+import { ChangePasswordByCodeDto, ChangePasswordDto, ForgotPasswordDto, LoginDto, SigninDto, UpdateProfileDto } from './dto';
 
 @Controller('auth')
 @ApiTags('Auth')

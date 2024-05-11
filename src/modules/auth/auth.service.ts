@@ -1,17 +1,11 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoginDto } from './dto/login.dto';
-import { BadRequestException, Injectable, NotImplementedException, } from '@nestjs/common';
-import { User } from './entities/user.entity';
+import { BadRequestException, Injectable, } from '@nestjs/common';
 import { FindOptionsWhere, MoreThan, Not, Repository } from 'typeorm';
 import { encryptPassword } from 'src/utils/encryptPassword';
 import { JwtService } from '@nestjs/jwt'
-import { SigninDto } from './dto/signing.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { UserCode } from './entities/user-code.entity';
 import { generateCode } from 'src/utils/gererateCode';
-import { ChangePasswordByCodeDto } from './dto/change-password-by-code.dto';
+import { User, UserCode } from './entities';
+import { ChangePasswordByCodeDto, ChangePasswordDto, ForgotPasswordDto, LoginDto, SigninDto, UpdateProfileDto } from './dto';
 
 @Injectable()
 export class AuthService {
