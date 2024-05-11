@@ -2,9 +2,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
 import { BadRequestException, Injectable, } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Not, Repository } from 'typeorm';
 import { encryptPassword } from 'src/utils/encryptPassword';
 import { JwtService } from '@nestjs/jwt'
+import { SigninDto } from './dto/signing.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,35 @@ export class AuthService {
             throw new BadRequestException('Credenciales incorrectas')
         }
 
+        return await this.generateToken(user)
+    }
+
+    private async validateUsername(username:string, id: number = undefined) {
+        const where: FindOptionsWhere<User> = {
+            username,
+        }
+        if (id) {
+          where.id = Not(id)
+        }
+        const user = await this.userRepository.findOne({
+          where
+        })
+        if (user) {
+          throw new BadRequestException("Ya existe un usuario con ese username")
+        }
+      }
+    
+    async signin(signinDto: SigninDto){
+        await this.validateUsername(signinDto.username)
+        const user = await this.userRepository.save(({
+            ...signinDto,
+            password: encryptPassword(signinDto.password)
+        }))
+        
+        return await this.generateToken(user)
+    }
+
+    private async generateToken(user: User){
         const payload = {
             userId: user.id,
             username: user.username
