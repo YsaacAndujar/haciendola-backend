@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,8 +14,23 @@ export class ProductsService {
         private readonly productRepository: Repository<Product>,
   ){}
 
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  async create(createProductDto: CreateProductDto) {
+   await this.validateProductCreateDto(createProductDto)
+    const product:Product = {
+      id: undefined,
+      ...createProductDto
+    }
+    const result = await this.productRepository.save(product)
+    return result
+  }
+
+  private async validateProductCreateDto({handle}: CreateProductDto, isUpdate=false) {
+    const product = await this.productRepository.find({
+      where:{handle}
+    })
+    if(product){
+      throw new BadRequestException("Ya existe un producto con ese handle")
+    }
   }
 
   async findAll(dto: GetPaginatedProductsDto) {
