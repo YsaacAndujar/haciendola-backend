@@ -48,6 +48,16 @@ export class AuthService {
         }
       }
     
+    private async getUserByIdOrThrow(id: number){
+        const user = await this.userRepository.findOne({
+            where:{id}
+        })
+        if (!user) {
+        throw new BadRequestException("Ya existe un usuario con ese username")
+        }
+        return user
+    }
+
     async changePassword({password}: ChangePasswordDto, userId: number) {
         throw new NotImplementedException()
     }
