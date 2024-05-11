@@ -7,6 +7,7 @@ import { Public } from 'src/decorators/public.decorator';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ChangePasswordByCodeDto } from './dto/change-password-by-code.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -35,6 +36,12 @@ export class AuthController {
   @Put('password')
   async changePassword(@Req() request, @Body() changePasswordDto: ChangePasswordDto) {
     return await this.authService.changePassword(changePasswordDto, request.user.userId)
+  }
+  
+  @Public()
+  @Put('password-by-code')
+  async changePasswordByCode(@Body() changePasswordByCodeDto: ChangePasswordByCodeDto) {
+    return await this.authService.changePasswordByCode(changePasswordByCodeDto)
   }
   
   @Put('profile')

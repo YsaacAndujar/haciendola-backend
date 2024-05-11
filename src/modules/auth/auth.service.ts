@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
 import { BadRequestException, Injectable, NotImplementedException, } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { FindOptionsWhere, Not, Repository } from 'typeorm';
+import { FindOptionsWhere, MoreThan, Not, Repository } from 'typeorm';
 import { encryptPassword } from 'src/utils/encryptPassword';
 import { JwtService } from '@nestjs/jwt'
 import { SigninDto } from './dto/signing.dto';
@@ -11,6 +11,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { UserCode } from './entities/user-code.entity';
 import { generateCode } from 'src/utils/gererateCode';
+import { ChangePasswordByCodeDto } from './dto/change-password-by-code.dto';
 
 @Injectable()
 export class AuthService {
@@ -95,6 +96,29 @@ export class AuthService {
             expires,
         }
         await this.userCodesRepository.save(code)
+        //todo send code through email
+    }
+    
+    async changePasswordByCode({username, code, password}: ChangePasswordByCodeDto) {
+        const error = new BadRequestException('Datos incorrectos')
+        const user = await this.userRepository.findOne({
+            where: {
+                username
+            }
+        })
+        if(!user) throw error
+        const currentDate = new Date();
+        const codeEntity = await this.userCodesRepository.findOne({
+            where: {
+                user: { username },
+                code,
+                expires: MoreThan(currentDate),
+              },
+        })
+        if(!codeEntity) throw error
+        
+        user.password = encryptPassword(password)
+        await this.userRepository.update(user.id, user)
     }
 
     async signin(signinDto: SigninDto){
