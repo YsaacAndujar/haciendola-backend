@@ -30,7 +30,6 @@ export class ProductsService {
     if (id) {
       where.id = Not(id)
     }
-    console.log(where)
     const product = await this.productRepository.findOne({
       where
     })
