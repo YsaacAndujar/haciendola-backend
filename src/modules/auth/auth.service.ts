@@ -59,7 +59,9 @@ export class AuthService {
     }
 
     async changePassword({password}: ChangePasswordDto, userId: number) {
-        throw new NotImplementedException()
+        const user = await this.getUserByIdOrThrow(userId)
+        user.password = encryptPassword(password)
+        await this.userRepository.update(userId,user)
     }
     
     async updateProfile({username}: UpdateProfileDto, userId: number) {
