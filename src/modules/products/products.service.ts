@@ -40,7 +40,7 @@ export class ProductsService {
   }
 
   async findAll({handle, skip, take}: GetPaginatedProductsDto) {
-    let whereClause: any = {};
+    let whereClause: FindOptionsWhere<Product> = {};
     if (handle) {
       whereClause.handle = ILike(`%${handle}%`);
     }
