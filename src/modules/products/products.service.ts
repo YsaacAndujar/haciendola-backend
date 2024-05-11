@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateOrUpdateProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Not, Repository } from 'typeorm';
+import { ILike, Not, Repository } from 'typeorm';
 import { GetPaginatedProductsDto } from './dto/get-products.dto';
 
 @Injectable()
@@ -23,11 +23,11 @@ export class ProductsService {
     return result
   }
 
-  private async validateProductCreateDto({ handle }: CreateOrUpdateProductDto, id:number=undefined) {
-    const where:any = { 
-      handle 
+  private async validateProductCreateDto({ handle }: CreateOrUpdateProductDto, id: number = undefined) {
+    const where: any = {
+      handle
     }
-    if(id){
+    if (id) {
       where.id = Not(id)
     }
     console.log(where)
@@ -39,19 +39,34 @@ export class ProductsService {
     }
   }
 
-  async findAll(dto: GetPaginatedProductsDto) {
+  async findAll({handle, skip, take}: GetPaginatedProductsDto) {
+    let whereClause: any = {};
+    if (handle) {
+      whereClause.handle = ILike(`%${handle}%`);
+    }
 
     const [result, total] = await this.productRepository.findAndCount(
       {
+        where: {
+          ...whereClause
+        },
         order: { id: "DESC" },
-        take: dto.limit,
-        skip: dto.page
+        take: take,
+        skip: skip,
+        select: {
+          id: true,
+          handle: true,
+          title: true,
+          stock: true,
+          price: true
+        },
+
       }
     );
 
     return {
-      result: result,
-      count: total
+      result,
+      total
     }
   }
 
