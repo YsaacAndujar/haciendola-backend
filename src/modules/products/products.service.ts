@@ -37,7 +37,7 @@ export class ProductsService {
     }
   }
 
-  async findAll({handle, skip, take}: GetPaginatedProductsDto) {
+  async findAll({handle, page, take}: GetPaginatedProductsDto) {
     let whereClause: FindOptionsWhere<Product> = {};
     if (handle) {
       whereClause.handle = ILike(`%${handle}%`);
@@ -50,7 +50,7 @@ export class ProductsService {
         },
         order: { id: "DESC" },
         take: take,
-        skip: skip,
+        skip: (page-1)*take,
         select: {
           id: true,
           handle: true,

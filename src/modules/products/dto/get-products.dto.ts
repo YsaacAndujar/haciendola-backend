@@ -5,7 +5,7 @@ export class GetPaginatedProductsDto {
     @ApiProperty({ default: 0, required: false })
     @IsOptional()
     @IsNotEmpty()
-    skip?: number;
+    page?: number;
 
     @ApiProperty({ default: 10, required: false })
     @IsOptional()
