@@ -1,9 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { SigninDto } from './dto/signing.dto';
 import { Public } from 'src/decorators/public.decorator';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -21,5 +23,15 @@ export class AuthController {
   @Post('signin')
   async signin(@Body() signinDto: SigninDto) {
     return await this.authService.signin(signinDto)
+  }
+  
+  @Put('password')
+  async changePassword(@Req() request, @Body() changePasswordDto: ChangePasswordDto) {
+    return await this.authService.changePassword(changePasswordDto, request.user.userId)
+  }
+  
+  @Put('profile')
+  async updateProfile(@Req() request, @Body() updateProfileDto: UpdateProfileDto) {
+    return await this.authService.updateProfile(updateProfileDto, request.user.userId)
   }
 }

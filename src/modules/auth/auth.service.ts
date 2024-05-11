@@ -1,11 +1,13 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
-import { BadRequestException, Injectable, } from '@nestjs/common';
+import { BadRequestException, Injectable, NotImplementedException, } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { FindOptionsWhere, Not, Repository } from 'typeorm';
 import { encryptPassword } from 'src/utils/encryptPassword';
 import { JwtService } from '@nestjs/jwt'
 import { SigninDto } from './dto/signing.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +48,14 @@ export class AuthService {
         }
       }
     
+    async changePassword({password}: ChangePasswordDto, userId: number) {
+        throw new NotImplementedException()
+    }
+    
+    async updateProfile({username}: UpdateProfileDto, userId: number) {
+        throw new NotImplementedException()
+    }
+
     async signin(signinDto: SigninDto){
         await this.validateUsername(signinDto.username)
         const user = await this.userRepository.save(({
