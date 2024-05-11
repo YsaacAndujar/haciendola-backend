@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt'
 import { SigninDto } from './dto/signing.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { UserCode } from './entities/user-code.entity';
+import { generateCode } from 'src/utils/gererateCode';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +18,8 @@ export class AuthService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(UserCode)
+        private readonly userCodesRepository: Repository<UserCode>,
         private readonly _jwtService: JwtService,
     ){}
 
@@ -72,6 +77,24 @@ export class AuthService {
             ...updateProfileDto
         }
         await this.userRepository.update(userId,newData)
+    }
+    
+    async forgotPassword({username}: ForgotPasswordDto) {
+        const user = await this.userRepository.findOne({
+            where: {
+                username
+            }
+        })
+        if(!user) return
+        const expires = new Date();
+        expires.setHours(expires.getHours() + 1);
+        const code: UserCode = {
+            id: undefined,
+            user,
+            code: generateCode(),
+            expires,
+        }
+        await this.userCodesRepository.save(code)
     }
 
     async signin(signinDto: SigninDto){

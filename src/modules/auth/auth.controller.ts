@@ -6,6 +6,7 @@ import { SigninDto } from './dto/signing.dto';
 import { Public } from 'src/decorators/public.decorator';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -23,6 +24,12 @@ export class AuthController {
   @Post('signin')
   async signin(@Body() signinDto: SigninDto) {
     return await this.authService.signin(signinDto)
+  }
+  
+  @Public()
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(forgotPasswordDto)
   }
   
   @Put('password')
