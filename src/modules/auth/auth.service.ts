@@ -64,8 +64,14 @@ export class AuthService {
         await this.userRepository.update(userId,user)
     }
     
-    async updateProfile({username}: UpdateProfileDto, userId: number) {
-        throw new NotImplementedException()
+    async updateProfile(updateProfileDto: UpdateProfileDto, userId: number) {
+        const user = await this.getUserByIdOrThrow(userId)
+        await this.validateUsername(updateProfileDto.username, userId)
+        const newData:User = {
+            ...user,
+            ...updateProfileDto
+        }
+        await this.userRepository.update(userId,newData)
     }
 
     async signin(signinDto: SigninDto){
