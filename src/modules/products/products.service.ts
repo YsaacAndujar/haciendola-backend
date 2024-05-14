@@ -37,17 +37,18 @@ export class ProductsService {
     }
   }
 
-  async findAll({handle, page, take}: GetPaginatedProductsDto) {
-    let whereClause: FindOptionsWhere<Product> = {};
-    if (handle) {
-      whereClause.handle = ILike(`%${handle}%`);
-    }
+  async findAll({param, page, take,}: GetPaginatedProductsDto) {
+    let whereClause: FindOptionsWhere<Product>[] = [];
+    if (param) {
+      whereClause= [
+       {handle: ILike(`%${param}%`)},
+       {title: ILike(`%${param}%`)},
+      ]
+     }
 
     const [result, total] = await this.productRepository.findAndCount(
       {
-        where: {
-          ...whereClause
-        },
+        where: whereClause,
         order: { id: "DESC" },
         take: take,
         skip: (page-1)*take,

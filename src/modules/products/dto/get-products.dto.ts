@@ -14,5 +14,5 @@ export class GetPaginatedProductsDto {
 
     @ApiProperty({ required: false })
     @IsOptional()
-    handle?: string;
+    param?: string;
 }
