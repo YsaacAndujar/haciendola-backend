@@ -44,7 +44,7 @@ export class AuthService {
           where
         })
         if (user) {
-          throw new BadRequestException("Ya existe un usuario con ese username")
+          throw new BadRequestException("Ya existe un usuario con ese usuario")
         }
       }
     
@@ -53,7 +53,7 @@ export class AuthService {
             where:{id}
         })
         if (!user) {
-        throw new BadRequestException("Ya existe un usuario con ese username")
+        throw new BadRequestException("Usuario no encontrado")
         }
         return user
     }
