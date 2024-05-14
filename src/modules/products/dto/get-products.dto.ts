@@ -5,12 +5,12 @@ export class GetPaginatedProductsDto {
     @ApiProperty({ default: 0, required: false })
     @IsOptional()
     @IsNotEmpty()
-    page?: number;
+    page?: number=0;
 
     @ApiProperty({ default: 10, required: false })
     @IsOptional()
     @IsNotEmpty()
-    take?: number;
+    take?: number=10;
 
     @ApiProperty({ required: false })
     @IsOptional()
