@@ -8,5 +8,10 @@ export class ChangePasswordDto {
     @ApiProperty({ required: true })
     @IsNotEmpty()
     @IsString()
-    password: string
+    newPassword: string
+    
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    @IsString()
+    oldPassword: string
 }

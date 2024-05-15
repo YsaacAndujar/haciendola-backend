@@ -16,71 +16,80 @@ export class AuthService {
         @InjectRepository(UserCode)
         private readonly userCodesRepository: Repository<UserCode>,
         private readonly _jwtService: JwtService,
-    ){}
+    ) { }
 
-    async login(loginDto: LoginDto){
+    async login(loginDto: LoginDto) {
         const user = await this.userRepository.findOne(({
-            where:{
+            where: {
                 ...loginDto,
                 password: encryptPassword(loginDto.password)
             }
         }))
-        
-        if(!user){
+
+        if (!user) {
             throw new BadRequestException('Credenciales incorrectas')
         }
 
         return await this.generateToken(user)
     }
 
-    private async validateUsername(username:string, id: number = undefined) {
+    private async validateUsername(username: string, id: number = undefined) {
         const where: FindOptionsWhere<User> = {
             username,
         }
         if (id) {
-          where.id = Not(id)
+            where.id = Not(id)
         }
         const user = await this.userRepository.findOne({
-          where
+            where
         })
         if (user) {
-          throw new BadRequestException("Ya existe un usuario con ese usuario")
+            throw new BadRequestException("Ya existe un usuario con ese usuario")
         }
-      }
-    
-    private async getUserByIdOrThrow(id: number){
+    }
+
+    private async getUserByIdOrThrow(id: number) {
         const user = await this.userRepository.findOne({
-            where:{id}
+            where: { id }
         })
         if (!user) {
-        throw new BadRequestException("Usuario no encontrado")
+            throw new BadRequestException("Usuario no encontrado")
         }
         return user
     }
 
-    async changePassword({password}: ChangePasswordDto, userId: number) {
+    async changePassword({ newPassword, oldPassword }: ChangePasswordDto, userId: number) {
         const user = await this.getUserByIdOrThrow(userId)
-        user.password = encryptPassword(password)
-        await this.userRepository.update(userId,user)
+        if(user.password != encryptPassword(oldPassword)){
+            throw new BadRequestException('Wrong credentials')
+        }
+        user.password = encryptPassword(newPassword)
+        await this.userRepository.update(userId, user)
     }
-    
+
     async updateProfile(updateProfileDto: UpdateProfileDto, userId: number) {
         const user = await this.getUserByIdOrThrow(userId)
         await this.validateUsername(updateProfileDto.username, userId)
-        const newData:User = {
+        const newData: User = {
             ...user,
             ...updateProfileDto
         }
-        await this.userRepository.update(userId,newData)
+        await this.userRepository.update(userId, newData)
     }
-    
-    async forgotPassword({username}: ForgotPasswordDto) {
+
+    async getProfile(id: number) {
+        const { password, ...user } = await this.getUserByIdOrThrow(id)
+        return user
+
+    }
+
+    async forgotPassword({ username }: ForgotPasswordDto) {
         const user = await this.userRepository.findOne({
             where: {
                 username
             }
         })
-        if(!user) return
+        if (!user) return
         const expires = new Date();
         expires.setHours(expires.getHours() + 1);
         const code: UserCode = {
@@ -92,40 +101,40 @@ export class AuthService {
         await this.userCodesRepository.save(code)
         //todo send code through email
     }
-    
-    async changePasswordByCode({username, code, password}: ChangePasswordByCodeDto) {
+
+    async changePasswordByCode({ username, code, password }: ChangePasswordByCodeDto) {
         const error = new BadRequestException('Datos incorrectos')
         const user = await this.userRepository.findOne({
             where: {
                 username
             }
         })
-        if(!user) throw error
+        if (!user) throw error
         const currentDate = new Date();
         const codeEntity = await this.userCodesRepository.findOne({
             where: {
                 user: { username },
                 code,
                 expires: MoreThan(currentDate),
-              },
+            },
         })
-        if(!codeEntity) throw error
-        
+        if (!codeEntity) throw error
+
         user.password = encryptPassword(password)
         await this.userRepository.update(user.id, user)
     }
 
-    async signin(signinDto: SigninDto){
+    async signin(signinDto: SigninDto) {
         await this.validateUsername(signinDto.username)
         const user = await this.userRepository.save(({
             ...signinDto,
             password: encryptPassword(signinDto.password)
         }))
-        
+
         return await this.generateToken(user)
     }
 
-    private async generateToken(user: User){
+    private async generateToken(user: User) {
         const payload = {
             userId: user.id,
             username: user.username
@@ -133,8 +142,8 @@ export class AuthService {
         const token = await this._jwtService.signAsync(payload, {
             secret: process.env.PRIVATE_KEY,
             expiresIn: process.env.EXPIRES_IN,
-          })
+        })
         return { token }
     }
-    
+
 }

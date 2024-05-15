@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators/public.decorator';
@@ -42,5 +42,10 @@ export class AuthController {
   @Put('profile')
   async updateProfile(@Req() request, @Body() updateProfileDto: UpdateProfileDto) {
     return await this.authService.updateProfile(updateProfileDto, request.user.userId)
+  }
+  
+  @Get('profile')
+  async getProfile(@Req() request) {
+    return await this.authService.getProfile(request.user.userId)
   }
 }
