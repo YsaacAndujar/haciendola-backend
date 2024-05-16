@@ -122,6 +122,7 @@ export class AuthService {
 
         user.password = encryptPassword(password)
         await this.userRepository.update(user.id, user)
+        return await this.generateToken(user)
     }
 
     async signin(signinDto: SigninDto) {
