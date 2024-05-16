@@ -6,10 +6,10 @@ import { JwtService } from '@nestjs/jwt'
 import { generateCode } from 'src/utils/gererateCode';
 import { User, UserCode } from './entities';
 import { ChangePasswordByCodeDto, ChangePasswordDto, ForgotPasswordDto, LoginDto, SigninDto, UpdateProfileDto } from './dto';
-
+const credentialsMsg = 'Wrong credentials'
 @Injectable()
 export class AuthService {
-
+    
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
@@ -27,7 +27,7 @@ export class AuthService {
         }))
 
         if (!user) {
-            throw new BadRequestException('Credenciales incorrectas')
+            throw new BadRequestException(credentialsMsg)
         }
 
         return await this.generateToken(user)
@@ -44,7 +44,7 @@ export class AuthService {
             where
         })
         if (user) {
-            throw new BadRequestException("Ya existe un usuario con ese usuario")
+            throw new BadRequestException("The username is already in use")
         }
     }
 
@@ -53,7 +53,7 @@ export class AuthService {
             where: { id }
         })
         if (!user) {
-            throw new BadRequestException("Usuario no encontrado")
+            throw new BadRequestException("User not found")
         }
         return user
     }
@@ -61,7 +61,7 @@ export class AuthService {
     async changePassword({ newPassword, oldPassword }: ChangePasswordDto, userId: number) {
         const user = await this.getUserByIdOrThrow(userId)
         if(user.password != encryptPassword(oldPassword)){
-            throw new BadRequestException('Wrong credentials')
+            throw new BadRequestException(credentialsMsg)
         }
         user.password = encryptPassword(newPassword)
         await this.userRepository.update(userId, user)
@@ -103,7 +103,7 @@ export class AuthService {
     }
 
     async changePasswordByCode({ username, code, password }: ChangePasswordByCodeDto) {
-        const error = new BadRequestException('Datos incorrectos')
+        const error = new BadRequestException(credentialsMsg)
         const user = await this.userRepository.findOne({
             where: {
                 username

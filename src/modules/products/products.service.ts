@@ -33,7 +33,7 @@ export class ProductsService {
       where
     })
     if (product) {
-      throw new BadRequestException("Ya existe un producto con ese handle")
+      throw new BadRequestException("Handle already in use")
     }
   }
 
